@@ -7,9 +7,9 @@
         {
           'destination': '<(SHARED_LIB_DIR)',
           'files': [
-            '<(DEPTH)/components/web_refiner/<(target_arch)/libswewebrefiner.so',
+            '<(DEPTH)/components/web_refiner/<(target_arch)/<(CONFIGURATION_NAME)/libswewebrefiner.so',
           ],
-        },
+        }
       ],
     },
 
