@@ -24,6 +24,13 @@
       'type': 'none',
       'variables': {
         'jar_path': '<(DEPTH)/components/web_refiner/java/libswewebrefiner_java.jar',
+        'resource_zip_path': '<(DEPTH)/components/web_refiner/java/libswewebrefiner_java.zip',
+      },
+      'all_dependent_settings': {
+        'variables': {
+          'additional_input_paths': ['<(resource_zip_path)'],
+          'dependencies_res_zip_paths': ['<(resource_zip_path)'],
+        },
       },
       'includes':['../../build/java_prebuilt.gypi']
     },
