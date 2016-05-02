@@ -1,0 +1,9 @@
+# Copyright (c) 2016 Qualcomm Technologies, Inc.
+# All Rights Reserved.
+# Confidential and Proprietary - Qualcomm Technologies, Inc.
+
+declare_args() {
+  web_refiner_native_libs = []
+  web_refiner_resource_dirs = []
+  web_refiner_dependencies = []
+}
