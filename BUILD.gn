@@ -1,0 +1,66 @@
+# Copyright (c) 2016 Qualcomm Technologies, Inc.
+# All Rights Reserved.
+# Confidential and Proprietary - Qualcomm Technologies, Inc.
+
+if (is_android) {
+  import("//build/buildflag_header.gni")
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+
+  _target_arch = target_cpu
+  _build_type = "Release"
+  if (is_debug) {
+    _build_type = "Debug"
+  }
+
+  copy("copy_libswewebrefiner") {
+    sources = [ "$_target_arch/$_build_type/libswewebrefiner.so" ]
+    outputs = [ "$root_shlib_dir/{{source_file_part}}" ]
+  }
+
+  group("libswewebrefiner") {
+    public_deps = [
+      ":copy_libswewebrefiner",
+      "//swe/swe_core:swe_core_native",
+    ]
+  }
+
+  _wr_res_zip_path = "//components/web_refiner/java/libswewebrefiner_java.zip"
+  _wr_unpacked_res_path = "$target_gen_dir/java/res/"
+  action("unpack_webrefiner_resources") {
+    _depfile = "$target_gen_dir/$target_name.d"
+    _stamp = "$target_gen_dir/$target_name.stamp"
+
+    script = "//components/web_refiner/extract_zip.py"
+    sources = [
+      _wr_res_zip_path,
+    ]
+    outputs = [
+      _depfile,
+    ]
+    args = [
+      "--zip", rebase_path(_wr_res_zip_path, root_build_dir),
+      "--exdir", rebase_path(_wr_unpacked_res_path, root_build_dir),
+      "--depfile", rebase_path(_depfile, root_build_dir),
+      "--stamp", rebase_path(_stamp, root_build_dir),
+    ]
+  }
+
+  android_resources("libswewebrefiner_java_resources") {
+    custom_package = "com.qualcomm.qti.webrefiner"
+    resource_dirs = []
+    generated_resource_dirs = [ _wr_unpacked_res_path, ]
+#    generated_resource_files = get_target_outputs(":unpack_webrefiner_resources")
+    generated_resource_files = []
+    deps = [
+      ":unpack_webrefiner_resources",
+    ]
+  }
+
+  android_java_prebuilt("libswewebrefiner_java") {
+    jar_path = "//components/web_refiner/java/libswewebrefiner_java.jar"
+    deps = [
+      ":libswewebrefiner_java_resources",
+    ]
+  }
+}
