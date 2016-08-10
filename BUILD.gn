@@ -15,7 +15,8 @@ if (is_android) {
 
   copy("copy_libswewebrefiner") {
     sources = [ "$_target_arch/$_build_type/libswewebrefiner.so" ]
-    outputs = [ "$root_shlib_dir/{{source_file_part}}" ]
+    outputs = [ "$root_shlib_dir/libswewebrefiner.so" ]
+    data = [ "$root_shlib_dir/libswewebrefiner.so" ]
   }
 
   group("libswewebrefiner") {
@@ -26,35 +27,28 @@ if (is_android) {
   }
 
   _wr_res_zip_path = "//components/web_refiner/java/libswewebrefiner_java.zip"
-  _wr_unpacked_res_path = "$target_gen_dir/java/res/"
-  action("unpack_webrefiner_resources") {
-    _depfile = "$target_gen_dir/$target_name.d"
-    _stamp = "$target_gen_dir/$target_name.stamp"
+  _wr_unpacked_res_path = "//components/web_refiner/extracted/res/"
 
-    script = "//components/web_refiner/extract_zip.py"
-    sources = [
-      _wr_res_zip_path,
-    ]
-    outputs = [
-      _depfile,
-    ]
-    args = [
-      "--zip", rebase_path(_wr_res_zip_path, root_build_dir),
-      "--exdir", rebase_path(_wr_unpacked_res_path, root_build_dir),
-      "--depfile", rebase_path(_depfile, root_build_dir),
-      "--stamp", rebase_path(_stamp, root_build_dir),
-    ]
+  _rebased_res_dir = rebase_path(_wr_unpacked_res_path, root_build_dir)
+  _wr_res_dir_exists = exec_script("//build/dir_exists.py", [ _rebased_res_dir ], "string") == "True"
+  if (!_wr_res_dir_exists) {
+    exec_script("//build/makedirs.py", [ _rebased_res_dir ], "string")
   }
+
+  _wr_extract_res_depfile = "//components/web_refiner/extracted/wr_extract_res.d"
+  _wr_extract_res_stamp = "//components/web_refiner/extracted/wr_extract_res.stamp"
+
+  extract_zip_args = [
+    "--zip", rebase_path(_wr_res_zip_path, root_build_dir),
+    "--exdir", rebase_path(_wr_unpacked_res_path, root_build_dir),
+    "--depfile", rebase_path(_wr_extract_res_depfile, root_build_dir),
+    "--stamp", rebase_path(_wr_extract_res_stamp, root_build_dir),
+  ]
+  exec_script("//components/web_refiner/extract_zip.py", extract_zip_args)
 
   android_resources("libswewebrefiner_java_resources") {
     custom_package = "com.qualcomm.qti.webrefiner"
-    resource_dirs = []
-    generated_resource_dirs = [ _wr_unpacked_res_path, ]
-#    generated_resource_files = get_target_outputs(":unpack_webrefiner_resources")
-    generated_resource_files = []
-    deps = [
-      ":unpack_webrefiner_resources",
-    ]
+    resource_dirs = [ _wr_unpacked_res_path ]
   }
 
   android_java_prebuilt("libswewebrefiner_java") {

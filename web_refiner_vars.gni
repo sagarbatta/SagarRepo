@@ -7,7 +7,7 @@ declare_args() {
     "libswewebrefiner.so"
   ]
   web_refiner_resource_dirs = [
-    "$root_out_dir/gen/components/web_refiner/java/res"
+    "//components/web_refiner/extracted/res"
   ]
   web_refiner_dependencies = [
     "//components/web_refiner:libswewebrefiner",
