@@ -3,7 +3,7 @@
 # Confidential and Proprietary - Qualcomm Technologies, Inc.
 
 declare_args() {
-  web_refiner_native_libs = []
-  web_refiner_resource_dirs = []
-  web_refiner_dependencies = []
+  web_refiner_resource_dirs = [ "//components/web_refiner/extracted/res" ]
+  web_refiner_native_deps = [ "//components/web_refiner:libswewebrefiner" ]
+  web_refiner_java_deps = [ "//components/web_refiner:libswewebrefiner_java" ]
 }
